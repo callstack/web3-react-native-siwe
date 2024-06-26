@@ -1,37 +1,64 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { Stack } from "expo-router";
+import "react-native-reanimated";
+import { WagmiProvider } from "wagmi";
+import { mainnet, polygon, arbitrum } from "@wagmi/core/chains";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  createWeb3Modal,
+  defaultWagmiConfig,
+  Web3Modal,
+} from "@web3modal/wagmi-react-native";
+import Header from "@/components/Header";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+// Setup QueryClient
+const queryClient = new QueryClient();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// Web3Modal projectId
+const projectId = process.env.EXPO_PUBLIC_WALLETCONNECT_CLOUD_PROJECT_ID ?? "";
+
+// Web3Modal metadata
+const metadata = {
+  name: "React Native SIWE",
+  description: "React Native SIWE Example",
+  url: "https://callstack.com",
+  icons: ["https://avatars.githubusercontent.com/u/42239399?v=4"],
+  redirect: {
+    native: "YOUR_APP_SCHEME://",
+    universal: "YOUR_APP_UNIVERSAL_LINK.com",
+  },
+};
+
+// Choose chains to enable
+const chains = [mainnet, polygon, arbitrum] as const;
+
+// Use Web3Modal's utils to create the Wagmi config and attach to Web3Modal
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+
+// Init Web3Modal instance
+createWeb3Modal({
+  projectId,
+  wagmiConfig,
+  defaultChain: mainnet,
+});
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={DefaultTheme}>
+          <Stack
+            screenOptions={{
+              header: () => <Header />,
+              presentation: "modal",
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="authenticated" />
+          </Stack>
+        </ThemeProvider>
+        <Web3Modal />
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
