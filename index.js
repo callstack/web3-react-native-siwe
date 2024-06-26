@@ -1,4 +1,4 @@
-// Import polyfills
+// Import WalletConnect polyfills
 import "@walletconnect/react-native-compat";
 
 // Import Expo Router Entry
