@@ -2,7 +2,7 @@ import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import "react-native-reanimated";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, arbitrum } from "@wagmi/core/chains";
+import { mainnet } from "@wagmi/core/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createWeb3Modal,
@@ -10,6 +10,7 @@ import {
   Web3Modal,
 } from "@web3modal/wagmi-react-native";
 import Header from "@/components/Header";
+import { siweConfig } from "@/utils/siweConfig";
 
 // Setup QueryClient
 const queryClient = new QueryClient();
@@ -30,7 +31,7 @@ const metadata = {
 };
 
 // Choose chains to enable
-const chains = [mainnet, polygon, arbitrum] as const;
+const chains = [mainnet] as const;
 
 // Use Web3Modal's utils to create the Wagmi config and attach to Web3Modal
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
@@ -39,6 +40,7 @@ const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 createWeb3Modal({
   projectId,
   wagmiConfig,
+  siweConfig,
   defaultChain: mainnet,
 });
 
