@@ -17,14 +17,18 @@ export default function HomeScreen() {
       );
       const nonce = await nonceRes.text();
 
+      const expirationTime = new Date();
+      expirationTime.setDate(expirationTime.getDate() + 1);
+
       // Create SIWE message with the nonce
       const message = createSiweMessage({
         address,
         chainId: mainnet.id,
         domain: "callstack.com",
         nonce,
-        uri: "https://www.callstack.com/blog/best-dx-for-react-native-web3-dapps-with-web3modal-and-wagmi",
+        uri: "rnsiwe://",
         version: "1",
+        expirationTime,
       });
 
       // Ask wallet to sign the message
@@ -56,15 +60,18 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {isConnected ? (
-        <Pressable
-          onPress={signInWithEthereum}
-          style={({ pressed }) => [
-            { opacity: pressed ? 0.8 : 1 },
-            styles.siweButton,
-          ]}
-        >
-          <Text style={styles.siweText}>Sign In With Ethereum</Text>
-        </Pressable>
+        <>
+          <Text>You can also sign in manually:</Text>
+          <Pressable
+            onPress={signInWithEthereum}
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.8 : 1 },
+              styles.siweButton,
+            ]}
+          >
+            <Text style={styles.siweText}>Sign In With Ethereum</Text>
+          </Pressable>
+        </>
       ) : (
         <Text>Please Connect Wallet to begin</Text>
       )}
@@ -78,6 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+    gap: 20,
   },
   siweButton: {
     padding: 10,

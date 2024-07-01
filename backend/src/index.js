@@ -3,14 +3,11 @@ import express from "express";
 import Session from "express-session";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
-import { generateSiweNonce } from "viem/siwe";
+import { generateSiweNonce, parseSiweMessage } from "viem/siwe";
 
 const app = express();
-
 app.use(express.json());
-
 app.use(cors({ credentials: true }));
-
 app.use(
   Session({
     name: "siwe-quickstart",
@@ -21,7 +18,7 @@ app.use(
   })
 );
 
-app.get("/nonce", function (_, res) {
+app.get("/nonce", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
 
   // Generate nonce
@@ -64,7 +61,6 @@ app.post("/verify", async function (req, res) {
     // If the message is valid, store the message object in the session
     req.session.siwe = messageFields;
     req.session.cookie.expires = new Date(messageFields.expirationTime);
-    req.session.save(() => res.status(200).send(true));
   } else {
     // If the message is not valid, clear the session
     req.session.siwe = null;
@@ -72,10 +68,11 @@ app.post("/verify", async function (req, res) {
     req.session.save(() =>
       res.status(422).json({ message: "Invalid signature" })
     );
+    return;
   }
 
   // Send back response
-  res.send(valid);
+  res.status(200).send(valid);
 });
 
 app.get("/get_session", function (req, res) {
@@ -89,7 +86,7 @@ app.get("/get_session", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
 
   // Send back session data
-  res.send({
+  res.status(200).send({
     address: req.session.siwe.address,
     chainId: req.session.siwe.chainId,
   });
