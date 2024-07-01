@@ -2,7 +2,14 @@
 
 This repository showcases how to configure Sign-In With Ethereum (SIWE) on a React Native app, while validating the SIWE message in a Node.js backend.
 
-The React Native [Expo](https://expo.dev/) project is built with [Wagmi](https://wagmi.sh/), [Viem](https://viem.sh/) and [WalletConnect AppKit](https://docs.walletconnect.com/appkit/overview). The app asks the backend to validate the SIWE message (also using Viem) and navigates to an authenticated route using Expo Router.
+The React Native project is built with [Expo](https://expo.dev/), [Wagmi](https://wagmi.sh/), [Viem](https://viem.sh/) and [WalletConnect AppKit](https://docs.walletconnect.com/appkit/overview). The app asks the backend to validate the SIWE message and navigates to an authenticated route using Expo Router.
+
+Backend nonce generation and SIWE validation is also done using Viem.
+
+Two implementations are available to test:
+
+- Automatically through WalletConnect AppKit: after connecting the wallet, a WalletConnect modal will appear asking to sign in. This uses the configuration in `/mobile/utils/siweConfig.ts`
+- Manually through Viem: if the WalletConnect modal is dismissed, a green button appears to Sign In With Ethereum manually. This uses Viem manually, in `/mobile/app/index.tsx`
 
 ![demo.gif](demo.gif)
 

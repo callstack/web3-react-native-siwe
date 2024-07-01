@@ -9,6 +9,7 @@ export default function HomeScreen() {
   const { signMessageAsync } = useSignMessage();
   const router = useRouter();
 
+  // Sign In With Ethereum manually using Viem
   const signInWithEthereum = async () => {
     if (address) {
       // Fetch nonce from the backend
