@@ -1,13 +1,15 @@
-import { StyleSheet, View, Text, Pressable } from "react-native";
-import { useAccount, useSignMessage } from "wagmi";
-import { createSiweMessage } from "viem/siwe";
+import React from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { mainnet } from "viem/chains";
-import { useRouter } from "expo-router";
+import { createSiweMessage } from "viem/siwe";
+import { useAccount, useSignMessage } from "wagmi";
+import { W3mButton } from "@web3modal/wagmi-react-native";
+import { useSession } from "@/utils/SessionContext";
 
-export default function HomeScreen() {
+export default function SIWEViem() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const router = useRouter();
+  const { signIn } = useSession();
 
   // Sign In With Ethereum manually using Viem
   const signInWithEthereum = async () => {
@@ -21,10 +23,12 @@ export default function HomeScreen() {
       const expirationTime = new Date();
       expirationTime.setDate(expirationTime.getDate() + 1);
 
+      const chainId = mainnet.id;
+
       // Create SIWE message with the nonce
       const message = createSiweMessage({
         address,
-        chainId: mainnet.id,
+        chainId,
         domain: "callstack.com",
         nonce,
         uri: "rnsiwe://",
@@ -46,14 +50,11 @@ export default function HomeScreen() {
           body: JSON.stringify({ message, signature }),
         }
       );
-
-      // If valid, navigate to the authenticated route
       const valid = await verifyRes.json();
 
       if (valid) {
-        // To keep the example short, this route is not properly protected
-        // If you want real protected routes, check the Expo docs: https://docs.expo.dev/router/reference/authentication
-        router.replace("/authenticated");
+        // If valid, persist the session and navigate to the authenticated route
+        signIn({ address, chainId });
       }
     }
   };
@@ -62,7 +63,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {isConnected ? (
         <>
-          <Text>You can also sign in manually:</Text>
+          <Text style={styles.title}>SIWE manually with Viem</Text>
           <Pressable
             onPress={signInWithEthereum}
             style={({ pressed }) => [
@@ -74,7 +75,10 @@ export default function HomeScreen() {
           </Pressable>
         </>
       ) : (
-        <Text>Please Connect Wallet to begin</Text>
+        <>
+          <Text style={styles.title}>Connect with WalletConnect AppKit</Text>
+          <W3mButton />
+        </>
       )}
     </View>
   );
@@ -82,11 +86,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    gap: 20,
+    gap: 10,
+  },
+  title: {
+    fontSize: 20,
   },
   siweButton: {
     padding: 10,

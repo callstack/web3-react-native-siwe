@@ -1,12 +1,27 @@
 import React from "react";
-import { W3mButton } from "@web3modal/wagmi-react-native";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View, Text, Pressable } from "react-native";
+import { useAccount, useDisconnect } from "wagmi";
 
 function Header() {
+  const { isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.buttonWrapper}>
-        <W3mButton />
+      <View style={styles.logoWrapper}>
+        <Text style={styles.logo}>React Native SIWE</Text>
+
+        {isConnected && (
+          <Pressable
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.8 : 1 },
+              styles.disconnectButton,
+            ]}
+            onPress={() => disconnect?.()}
+          >
+            <Text style={styles.disconnectText}>Disconnect</Text>
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -14,13 +29,34 @@ function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
     borderBottomWidth: 0.5,
     borderColor: "lightgray",
+    marginHorizontal: 10,
   },
-  buttonWrapper: {
+  logoWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
     marginBottom: 10,
+  },
+  logo: {
+    fontSize: 20,
+    fontWeight: "bold",
+    letterSpacing: -1,
+    fontStyle: "italic",
+  },
+  disconnectButton: {
+    marginLeft: "auto",
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 15,
+    borderCurve: "continuous",
+    backgroundColor: "red",
+  },
+  disconnectText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 
