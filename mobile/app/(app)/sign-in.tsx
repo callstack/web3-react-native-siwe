@@ -8,9 +8,7 @@ export default function SignIn() {
   return (
     <View style={styles.container}>
       <SIWEViem />
-
-      {/* TODO: Implement Thirdweb SDK */}
-      {/* <SIWEThirdweb /> */}
+      <SIWEThirdweb />
     </View>
   );
 }

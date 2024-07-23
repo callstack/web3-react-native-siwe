@@ -3,6 +3,8 @@ import { useStorageState } from "./useStorageState";
 import { type SIWESession } from "@web3modal/siwe-react-native";
 import { useRouter } from "expo-router";
 
+// Context to store the SIWE session and continue authenticated between app launches
+
 const SessionContext = React.createContext<{
   session: SIWESession | null;
   isLoading: boolean;

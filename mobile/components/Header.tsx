@@ -31,13 +31,14 @@ const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 0.5,
     borderColor: "lightgray",
-    marginHorizontal: 10,
+    backgroundColor: "#FFF",
   },
   logoWrapper: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   logo: {
     fontSize: 20,
