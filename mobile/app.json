@@ -22,7 +22,8 @@
           "rainbow",
           "uniswap"
         ]
-      }
+      },
+      "bundleIdentifier": "com.callstack.react-native-siwe"
     },
     "android": {
       "adaptiveIcon": {
